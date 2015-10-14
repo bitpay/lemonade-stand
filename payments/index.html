@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Payment Processor</title>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.qrcode/1.0/jquery.qrcode.min.js"></script>
+</head>
+
+<body>
+  <h1>Payment Processor</h1>
+  <div id="qrcode"></div>
+  <p>Please send {{amount}} BTC to {{address}}</p>
+  <h2>Total Received</h2>
+  <p><span id="total-{{hash}}">0</span> BTC</p>
+
+  <script type="text/javascript">
+    $('#qrcode').qrcode("bitcoin:{{address}}?amount={{amount}}");
+  </script>
+
+  <script language="javascript">
+    var socket = io('http://localhost:3001');
+    socket.on('address/balance', function(addressObj, balance) {
+      // bitcore's address.toObject() doesn't include the actual address, so we have to use the hash
+      document.getElementById('total-' + addressObj.hash).innerHTML = (balance / 1e8);
+    });
+    socket.emit('subscribe', 'address/balance', ['{{address}}']);
+  </script>
+</body>
+
+</html>
