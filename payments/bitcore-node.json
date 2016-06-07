@@ -1,0 +1,14 @@
+{
+  "datadir": "~/.bitcoin",
+  "network": "testnet",
+  "port": 3001,
+  "services": [
+    "bitcoind",
+    "web",
+    "db",
+    "address",
+    "insight-api",
+    "insight",
+    "payments"
+  ]
+}
