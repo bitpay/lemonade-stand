@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Lemonade Stand</title>
+  <base href="{{baseUrl}}" />
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="js/jquery/dist/jquery.js"></script>
+  <script src="js/jquery-qrcode/jquery.qrcode.min.js"></script>
+  <script src="js/bitcore-lib/bitcore-lib.js"></script>
+</head>
+
+<body>
+  <h1>Lemonade Stand</h1>
+  <h2>Invoice</h2>
+  <div id="qrcode"></div>
+  <p>Please send {{amount}} BTC to {{address}}</p>
+  <h2>Transactions Received</h2>
+  <ul id="txids">
+  </ul>
+
+  <script type="text/javascript">
+    $('#qrcode').qrcode("bitcoin:{{address}}?amount={{amount}}");
+  </script>
+
+  <script language="javascript">
+    var bitcore = require('bitcore-lib');
+    var socket = io('http://localhost:3001');
+    socket.on('bitcoind/addresstxid', function(data) {
+      var address = bitcore.Address(data.address);
+      if (address.toString() == '{{address}}') {
+        var txidsElm = document.getElementById('txids');
+        var elm = document.createTextNode('txid: ' + data.txid);
+        txidsElm.appendChild(elm);
+      }
+    });
+    socket.emit('subscribe', 'bitcoind/addresstxid', ['{{address}}']);
+  </script>
+</body>
+
+</html>
